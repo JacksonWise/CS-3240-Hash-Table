@@ -1,0 +1,141 @@
+//	hash1.org	2014 feb 28
+//
+//	Shows otganization of instructor's "hash1.cpp".
+//	Command line is >hash1 txtfile disp size1 [size2 size3 ... sizen]
+//	Here disp ("display mode") must be 0 or 1.
+//	Then for tables of size from size1 to sizen a hash table of length
+//	size is created; a count of the number of occurrences of each word
+//	(string of alphas, all converted to lower case) in textfile is made.
+//	Some results are shown; if disp is 1, then words are shown, along
+//	with their counts; stats are shown for each size.
+//
+
+#include <ctype.h>			// isalpha()
+#include <fstream>			// for processing files
+#include <iomanip>
+#include <iostream>
+#include <stdlib.h>
+#include <string.h>
+
+using namespace std;
+
+	int const maxs=32;		// max string length
+	int const maxsp=1000000;	// string space size
+	int const maxt=32768;		// max table size, no. diff. words
+	char *const nill=(char *)0;	// null pointer to string
+	char *ssp,*ssp1,strspc[maxsp];	// string space, and pointers into it
+
+	struct {
+		char *p;		// pointer into string space
+		int k;			// count of words
+	} table[maxt];
+
+int
+main( int argc,char **argv )
+{
+	int count( ifstream &,int );
+
+	ifstream f;
+	int disp,first=1,i,s,size,w,y;
+	char ch;
+
+	if ( argc < 4 ) {
+		cout << "** use is >hash txtfile disp size1 [size2 ... ] **\n";
+		exit( 1 );
+	}
+	f.open( *++argv,ios::in );
+	if ( f.fail() ) {
+		cout << "** can't open " << *argv << " **\n";
+		exit( 1 );
+	}
+	disp = atoi( *++argv );
+	if ( (disp != 0) && (disp != 1) ) {
+		cout << "** illegal display option **\n";
+		f.close();
+		exit( 1 );
+	}
+	cout.setf( ios::fixed,ios::floatfield );
+	cout.setf( ios::showpoint );
+	cout.precision( 4 );
+	ssp1 = strspc+maxsp;
+	while ( *++argv ) {
+		f.clear();
+		f.seekg( 0 );
+		size = atoi( *argv );
+		if ( (size < 1) || (maxt < size) ) {
+			cout << "** bad size: " << size << " **\n";
+			f.close();
+			exit( 1 );
+		}
+		ssp = strspc;
+		y = count( f,size );
+		if ( y == 0 ) {
+			cout << "** count returns 0 **\n";
+			f.close();
+			exit( 1 );
+		}
+		if ( y < 0 ) {
+			switch ( (int)(-y) ) {
+				case 1:	cout << "** not enough string space **"
+						"\n";
+					break;
+				case 2: cout << "** " << size << " is too smal"
+					"l size **\n";
+			}
+			break;
+		}
+		if ( first ) {
+			--first;
+			if ( disp ) {
+				for ( i = 0;  i < size;  i++ ) {
+					if ( table[i].k != 0 ) {
+						cout.setf( ios::left,
+							ios::adjustfield );
+						cout << setw( 16 )
+							<< table[i].p;
+						cout.setf( ios::right,
+							ios::adjustfield );
+						cout << setw( 6 )
+							<< table[i].k << '\n';
+					}
+				}
+			}
+			for ( s = 0, w = i = 0;  i < size;  i++ ) {
+				if ( table[i].k ) {
+					w++;
+					s += table[i].k;
+				}
+			}
+			cout << '\n' << s << " words, " << w << " different wo"
+				"rds, " << ssp-strspc << " bytes of string spa"
+				"ce used\n\n";
+		}
+		cout << "size =" << setw( 5 ) << size << ", alpha ="
+			<< setw( 7 ) << (double)w/(double)size << ','
+			<< setw( 8 ) << y << " collisions,"
+			<< setw( 10 ) << (double)y/(double)s << "/word\n";
+	}
+	f.close();
+	return( 0 );
+}
+int
+count( ifstream & fs,int size )
+{
+	int find( const char *,int,int );
+
+	int c,f,i,l,y;
+	char ch,*p,s[maxs+1];
+}
+int
+find( const char *s,int size,int len )
+{
+	int h( const char *,int );
+
+	int c,i;
+	char *p;
+}
+int
+h( const char *s,int m )
+{
+	int y;
+}
