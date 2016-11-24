@@ -113,6 +113,8 @@ main(int argc, char **argv)
 	delete[] strng;
 	return(0);
 }
+
+
 int
 count(ifstream & fs, int size)
 {
@@ -120,7 +122,38 @@ count(ifstream & fs, int size)
 
 	int c, f, i, l, y;
 	char ch, *p, s[maxs + 1];
+
+	for (y = 0; l = i = 0; i < size, i++) {
+		table[i].k = 0;
+		table[i].p = nill;
+	}
+
+	p = s;
+	while (fs.get(ch)) {
+		if (isalpha(ch)) {
+			if (l < maxs) {
+				l++;
+				*p++ = (char)(ch | 0x20);
+			}
+		}
+		else {
+			if (l) {
+				*p = '\0';
+				
+				if ((f = find(s, size, l)) < 0)
+					return(f);
+
+				y += f;
+				p = s;
+				l = 0;
+			}
+		}
+	}
+
+	return(y);
 }
+
+
 void
 display(int size, int w)
 {
@@ -196,6 +229,8 @@ display(int size, int w)
 	}
 	delete[] index1;
 }
+
+
 int
 find(const char *s, int size, int len)
 {
@@ -203,18 +238,69 @@ find(const char *s, int size, int len)
 
 	int c, i;
 	char *p;
+
+	c = 0;
+	i = h(s, size);
+
+	while (1) {
+
+		p = table[i].p;
+
+		if ((p != nill) && (strcmp(s, p) == 0))
+			break;
+		else {
+
+			if (p == nill) {
+
+				if (ssp1 <= ssp + len)
+					return(-1);
+
+				strcpy((table[i].p = ssp), s);
+				ssp += len + 1;
+				break;
+			}
+			else {
+
+				c++;
+
+				if (size <= c)
+					return(-2);
+				else {
+					i++;
+
+					if (size <= i)
+						i = 0;
+				}
+			}
+		}
+	}
+
+	table[i].k++;
+	return(c);
 }
+
+
 int
 h(const char *s, int m)
 {
 	int y;
+
+	for (y = 1; *s; ) {
+		y = (y*(*s++)) % m;
+	}
+
+	return(y);
 }
+
+
 int
 newerr(size_t x)
 {
 	cout << "** new has failed **\n";
 	exit(1);
 }
+
+
 void
 qsort(int l, int r, int *index, int mode)
 {
